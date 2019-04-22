@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.effect.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.media.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="900.0" prefWidth="1600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+   <top>
+      <ToolBar prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: #474747;" BorderPane.alignment="CENTER">
+         <items>
+            <MenuBar fx:id="menuBar" prefHeight="32.0" prefWidth="169.0" style="-fx-background-color: #626262;">
+              <menus>
+                <Menu mnemonicParsing="false" text="File">
+                  <items>
+                        <MenuItem fx:id="newFile" mnemonicParsing="false" onAction="#btnNewFile" text="New file" />
+                        <MenuItem fx:id="newTab" mnemonicParsing="false" onAction="#btnNewTab" text="New tab" />
+                        <MenuItem fx:id="openFile" mnemonicParsing="false" onAction="#btnOpenFile" text="Open..." />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem fx:id="saveFile" mnemonicParsing="false" onAction="#btnSave" text="Save" />
+                        <MenuItem fx:id="saveAs" mnemonicParsing="false" onAction="#btnSaveAs" text="Save as..." />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem fx:id="closeCurrentTab" mnemonicParsing="false" onAction="#btnCloseTab" text="Close current tab" />
+                        <MenuItem fx:id="quit" mnemonicParsing="false" onAction="#btnQuit" text="Quit" />
+                  </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Edit">
+                     <items>
+                        <MenuItem fx:id="undo" mnemonicParsing="false" onAction="#btnUndo" text="Undo" />
+                     </items></Menu>
+                  <Menu mnemonicParsing="false" text="Help">
+                    <items>
+                      <MenuItem mnemonicParsing="false" text="About the author..." />
+                    </items>
+                  </Menu>
+              </menus>
+            </MenuBar>
+         </items>
+      </ToolBar>
+   </top>
+   <center>
+      <TabPane fx:id="tabPane" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #484848;" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+        <tabs>
+          <Tab text="Untitled Tab 1">
+               <content>
+                  <BorderPane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #484848;" />
+               </content>
+          </Tab>
+        </tabs>
+      </TabPane>
+   </center>
+   <bottom>
+      <HBox prefHeight="20.0" prefWidth="1600.0" style="-fx-background-color: #404040;" BorderPane.alignment="CENTER">
+         <children>
+            <Label fx:id="CursorPositionLabel" prefHeight="21.0" prefWidth="226.0" text="Cursor ххх:ууу px" textFill="#d3cdcd" />
+            <Separator orientation="VERTICAL" prefHeight="200.0" />
+            <Label fx:id="imageSize" prefHeight="20.0" prefWidth="122.0" text="Image x:y px" textFill="#d3cdcd" />
+            <Label prefHeight="20.0" prefWidth="96.0" text="Scale XXX%" textFill="#d3cdcd">
+               <HBox.margin>
+                  <Insets left="1000.0" />
+               </HBox.margin>
+            </Label>
+            <Slider prefHeight="30.0" prefWidth="140.0" >
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </Slider>
+         </children>
+      </HBox>
+   </bottom>
+   <right>
+      <VBox prefHeight="840.0" prefWidth="250.0" style="-fx-background-color: #404040;" BorderPane.alignment="CENTER">
+         <children>
+            <HBox prefHeight="39.0" prefWidth="250.0" style="-fx-background-color: #a1a1a1;" />
+            <HBox prefHeight="40.0" prefWidth="250.0">
+               <children>
+                  <Label prefHeight="17.0" prefWidth="70.0" text="Tool" textFill="#d3cdcd">
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </HBox.margin>
+                  </Label>
+                  <SplitMenuButton fx:id="Tools" mnemonicParsing="false" prefHeight="30.0" prefWidth="150.0" text="SplitMenuButton">
+                    <items>
+                        <MenuItem fx:id="arc" mnemonicParsing="false" onAction="#toolArc" text="Arc" />
+                        <MenuItem fx:id="brush" mnemonicParsing="false" onAction="#toolBrush" text="Brush" />
+                      <MenuItem fx:id="line" mnemonicParsing="false" onAction="#toolLine" text="Line" />
+                      <MenuItem fx:id="rectangle" mnemonicParsing="false" onAction="#toolRectangle" text="Rectangle" />
+                    </items>
+                     <HBox.margin>
+                        <Insets top="7.0" />
+                     </HBox.margin>
+                  </SplitMenuButton>
+               </children>
+            </HBox>
+            <HBox prefHeight="40.0" prefWidth="250.0">
+               <children>
+                  <Label prefHeight="17.0" prefWidth="70.0" text="Color" textFill="#d3cdcd">
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </HBox.margin>
+                  </Label>
+                  <ColorPicker fx:id="colorPicker" prefHeight="30.0" prefWidth="150.0">
+                     <HBox.margin>
+                        <Insets top="7.0" />
+                     </HBox.margin>
+                  </ColorPicker>
+               </children>
+            </HBox>
+            <HBox prefHeight="40.0" prefWidth="200.0">
+               <children>
+                  <Label prefHeight="17.0" prefWidth="70.0" text="Size" textFill="#d3cdcd">
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </HBox.margin>
+                  </Label>
+                  <Slider prefHeight="25.0" prefWidth="150.0" fx:id="sliderSize">
+                     <HBox.margin>
+                        <Insets top="7.0" />
+                     </HBox.margin>
+                  </Slider>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </right>
+</BorderPane>
