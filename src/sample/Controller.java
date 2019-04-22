@@ -10,12 +10,14 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.effect.Effect;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.paint.Color;
 import javafx.stage.*;
 import javafx.scene.canvas.Canvas;
 import javax.imageio.ImageIO;
@@ -73,26 +75,34 @@ public class Controller {
     protected Label CursorPositionLabel;
     @FXML
     protected Slider sliderSize;
+    @FXML
+    protected Label labelSliderSize;
 
 
     //***************************************************************************
 
     @FXML
     private void btnNewFile() {
-        Stage dialogWindowStage = new Stage();
-        InputStream stream = getClass().getResourceAsStream("dialogNewFileWindow.fxml");
-        FXMLLoader loader = new FXMLLoader();
-        try {
-            Scene scene = new Scene(loader.load(stream));
-            dialogWindowStage.setScene(scene);
-            dialogWindowStage.setTitle("New File");
-            dialogWindowStage.setResizable(false);
-            dialogWindowStage.initModality(Modality.WINDOW_MODAL);
-            dialogWindowStage.initOwner(menuBar.getScene().getWindow());
-            dialogWindowStage.show();
-        } catch (IOException e) {
-            Bridge.alertErrorMessage("An error while creating file", "File was not created");
-        }
+        Canvas canvas = new Canvas(1600, 900);
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        gc.setFill(Color.WHITE);
+        gc.fillRect(0,0,1600,900);
+        setToView(tabPane.getSelectionModel().getSelectedItem(), canvas);
+//        Stage dialogWindowStage = new Stage();
+//        InputStream stream = getClass().getResourceAsStream("dialogNewFileWindow.fxml");
+//        FXMLLoader loader = new FXMLLoader();
+//        try {
+//            Scene scene = new Scene(loader.load(stream));
+//            dialogWindowStage.setScene(scene);
+//            dialogWindowStage.setTitle("New File");
+//            dialogWindowStage.setResizable(false);
+//            dialogWindowStage.initModality(Modality.WINDOW_MODAL);
+//            dialogWindowStage.initOwner(menuBar.getScene().getWindow());
+//            dialogWindowStage.show();
+//        } catch (IOException e) {
+//            Bridge.alertErrorMessage("An error while creating file", "File was not created");
+//        }
+//        TODO УБРАНО НА ВРЕМЯ ТЕСТОВ, ВЕРНУТЬ И ПЕРЕДЕЛАТЬ
     }
 
     @FXML
@@ -190,9 +200,9 @@ public class Controller {
     }
 
     @FXML
-    private void toolArc() {
-        Tools.setText("Arc");
-        setTool("Arc", Bridge.canvas);
+    private void toolOval() {
+        Tools.setText("Oval");
+        setTool("Oval", Bridge.canvas);
     }
 
     @FXML
@@ -212,6 +222,12 @@ public class Controller {
         ((BorderPane) tab.getContent()).setCenter(canvas);
         Bridge.canvas = canvas;
         canvas.addEventHandler(MouseEvent.MOUSE_MOVED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                CursorPositionLabel.setText("Cursor: "+ event.getX()+":"+event.getY());
+            }
+        });
+        canvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
                 CursorPositionLabel.setText("Cursor: "+ event.getX()+":"+event.getY());
@@ -253,15 +269,19 @@ public class Controller {
                 canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.brushPressed);
                 canvas.addEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.brushReleased);
                 break;
-            case "Arc":
+            case "Oval":
                 this.tool = tool;
-                canvas.addEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.arcReleased);
-                canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.arcPressed);
+                canvas.addEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.ovalReleased);
+                canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.ovalPressed);
                 break;
             case "Line":
                 this.tool = tool;
                 Bridge.canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.linePressed);
                 Bridge.canvas.addEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.lineReleased);
+                break;
+            case "Rectangle":
+                Bridge.canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.rectPressed);
+                Bridge.canvas.addEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.rectReleased);
                 break;
         }
     }
@@ -273,12 +293,17 @@ public class Controller {
                 Bridge.canvas.removeEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.brushPressed);
                 Bridge.canvas.removeEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.brushReleased);
                 break;
-            case "Arc":
-                Bridge.canvas.removeEventHandler(MouseEvent.MOUSE_DRAGGED, sample.Tools.arcPressed);
+            case "Oval":
+                Bridge.canvas.removeEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.ovalPressed);
+                Bridge.canvas.removeEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.ovalReleased);
                 break;
             case "Line":
                 Bridge.canvas.removeEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.linePressed);
                 Bridge.canvas.removeEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.lineReleased);
+                break;
+            case "Rectangle":
+                Bridge.canvas.removeEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.rectPressed);
+                Bridge.canvas.removeEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.rectReleased);
                 break;
         }
     }

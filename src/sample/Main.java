@@ -19,6 +19,8 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 
 
@@ -59,7 +61,7 @@ public class Main extends Application {
         Bridge.controller.sliderSize.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-
+                Bridge.controller.labelSliderSize.setText("Size: " + new BigDecimal(newValue.doubleValue()).setScale(3, RoundingMode.UP).doubleValue());
             }
         });
     }

@@ -6,36 +6,36 @@ import javafx.scene.input.MouseEvent;
 
 public class Tools {
     static double lineWidth;
-    static boolean flag = false;
-    static double x;
-    static double y;
-    static final EventHandler<MouseEvent> arcPressed = new EventHandler<MouseEvent>() {
+    private static boolean flag = false;
+    private static double x;
+    private static double y;
+    static final EventHandler<MouseEvent> ovalPressed = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent event) {
             Bridge.graphicsContext.beginPath();
             Bridge.graphicsContext.moveTo(event.getX(), event.getY());
             x = event.getX();
             y = event.getY();
-            System.out.println(x);
-            System.out.println(y);
         }
     };
-    static final EventHandler<MouseEvent> arcReleased = new EventHandler<MouseEvent>() {
+    static final EventHandler<MouseEvent> ovalReleased = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent event) {
-            Bridge.graphicsContext.arcTo(x, y, event.getX(), event.getY(), 300);
-            Bridge.graphicsContext.setStroke(Bridge.controller.colorPicker.getValue());
-            System.out.println(event.getX());
-            System.out.println(event.getY());
-            Bridge.graphicsContext.stroke();
+            double minX = Math.min(x, event.getX());
+            double maxX = Math.max(x, event.getX());
+            double minY = Math.min(y, event.getY());
+            double maxY = Math.max(y, event.getY());
+            setColor();
+            setLineWidth();
+            Bridge.graphicsContext.strokeOval(minX, minY, maxX - minX, maxY - minY);
         }
     };
     static final EventHandler<MouseEvent> brushDragged = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent event) {
-            Bridge.graphicsContext.setLineWidth(Bridge.controller.sliderSize.getValue());
+            setLineWidth();
             Bridge.graphicsContext.lineTo(event.getX(), event.getY());
-            Bridge.graphicsContext.setStroke(Bridge.controller.colorPicker.getValue());
+            setColor();
             Bridge.graphicsContext.stroke();
         }
     };
@@ -43,11 +43,9 @@ public class Tools {
         @Override
         public void handle(MouseEvent event) {
             Bridge.graphicsContext.beginPath();
-            Bridge.graphicsContext.setLineWidth(Bridge.controller.sliderSize.getValue());
-            //System.out.println(Bridge.controller.sliderSize.getValue());
+            setLineWidth();
             Bridge.graphicsContext.moveTo(event.getX(), event.getY());
-            Bridge.graphicsContext.setStroke(Bridge.controller.colorPicker.getValue());
-            Bridge.graphicsContext.stroke();
+            setColor();
             flag = true;
         }
     };
@@ -65,7 +63,7 @@ public class Tools {
         public void handle(MouseEvent event) {
             Bridge.graphicsContext.beginPath();
             Bridge.graphicsContext.moveTo(event.getX(), event.getY());
-            Bridge.graphicsContext.setStroke(Bridge.controller.colorPicker.getValue());
+            setColor();
             x = event.getX();
             y = event.getY();
             Bridge.graphicsContext.setLineWidth(Bridge.controller.sliderSize.getValue());
@@ -83,6 +81,55 @@ public class Tools {
 
         }
     };
+    static final EventHandler<MouseEvent> rectPressed = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent event) {
+            Bridge.graphicsContext.beginPath();
+            Bridge.graphicsContext.moveTo(event.getX(), event.getY());
+            setColor();
+            x = event.getX();
+            y = event.getY();
+            setLineWidth();
+            flag = true;
+        }
+    };
+    static final EventHandler<MouseEvent> rectReleased = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent event) {
+            if(flag) {
+                double minX = Math.min(x, event.getX());
+                double maxX = Math.max(x, event.getX());
+                double minY = Math.min(y, event.getY());
+                double maxY = Math.max(y, event.getY());
+                setColor();
+                Bridge.graphicsContext.strokeRect(minX,minY,maxX - minX, maxY - minY);
+                flag = false;
+            }
+            Bridge.graphicsContext.save();
+        }
+    };
+
+    static void setColor(){
+        Bridge.graphicsContext.setStroke(Bridge.controller.colorPicker.getValue());
+    }
+
+    static void setLineWidth(){
+        Bridge.graphicsContext.setLineWidth(Bridge.controller.sliderSize.getValue());
+    }
+
+//    static final List<EventHandler<MouseEvent>> brush = new ArrayList<>();
+//    static final List<EventHandler<MouseEvent>> arc = new ArrayList<>();
+//    static final List<EventHandler<MouseEvent>> line = new ArrayList<>();
+//    static {
+//        brush.add( brushDragged);
+//        brush.add( brushPressed);
+//        brush.add(brushReleased);
+//        line.add( linePressed);
+//        line.add(lineReleased);
+//        arc.add(arcPressed);
+//        arc.add(arcReleased);
+//    }
+    
 
     //public static final EventHandler<MouseEvent> rectangle;
 }
