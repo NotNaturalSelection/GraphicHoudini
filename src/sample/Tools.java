@@ -11,6 +11,7 @@ public class Tools {
     static final EventHandler<MouseEvent> ovalPressed = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent event) {
+            Bridge.graphicsContext.save();
             Bridge.graphicsContext.beginPath();
             Bridge.graphicsContext.moveTo(event.getX(), event.getY());
             x = event.getX();
@@ -34,6 +35,17 @@ public class Tools {
             }
         }
     };
+    static final EventHandler<MouseEvent> brushPressed = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent event) {
+            Bridge.graphicsContext.save();
+            Bridge.graphicsContext.beginPath();
+            setLineWidth();
+            Bridge.graphicsContext.moveTo(event.getX(), event.getY());
+            setColor();
+            flag = true;
+        }
+    };
     static final EventHandler<MouseEvent> brushDragged = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent event) {
@@ -41,16 +53,6 @@ public class Tools {
             Bridge.graphicsContext.lineTo(event.getX(), event.getY());
             setColor();
             Bridge.graphicsContext.stroke();
-        }
-    };
-    static final EventHandler<MouseEvent> brushPressed = new EventHandler<MouseEvent>() {
-        @Override
-        public void handle(MouseEvent event) {
-            Bridge.graphicsContext.beginPath();
-            setLineWidth();
-            Bridge.graphicsContext.moveTo(event.getX(), event.getY());
-            setColor();
-            flag = true;
         }
     };
     static final EventHandler<MouseEvent> brushReleased = new EventHandler<MouseEvent>() {
@@ -65,6 +67,7 @@ public class Tools {
     static final EventHandler<MouseEvent> linePressed = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent event) {
+            Bridge.graphicsContext.save();
             Bridge.graphicsContext.beginPath();
             Bridge.graphicsContext.moveTo(event.getX(), event.getY());
             setColor();
@@ -82,12 +85,12 @@ public class Tools {
                 Bridge.graphicsContext.strokeLine(x, y, event.getX(), event.getY());
                 flag = false;
             }
-
         }
     };
     static final EventHandler<MouseEvent> rectPressed = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent event) {
+            Bridge.graphicsContext.save();
             Bridge.graphicsContext.beginPath();
             Bridge.graphicsContext.moveTo(event.getX(), event.getY());
             setColor();
@@ -114,7 +117,6 @@ public class Tools {
                 }
                 flag = false;
             }
-            Bridge.graphicsContext.save();
         }
     };
 

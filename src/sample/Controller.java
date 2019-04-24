@@ -3,6 +3,7 @@ package sample;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -13,9 +14,11 @@ import javafx.scene.paint.Color;
 import javafx.stage.*;
 import javafx.scene.canvas.Canvas;
 import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.BitSet;
 import java.util.Optional;
 
 public class Controller {
@@ -232,11 +235,12 @@ public class Controller {
             Canvas canvas = ((Canvas) ((BorderPane) tabPane.getSelectionModel().getSelectedItem().getContent()).getCenter());
             int width = (int) canvas.getWidth();
             int height = (int) canvas.getHeight();
-            WritableImage wImage = canvas.snapshot(null, new WritableImage(width, height));
-            RenderedImage renderedImage = SwingFXUtils.fromFXImage(wImage, null);
-            //TODO exception formatName == null; переделать openFile
+            WritableImage wImage = canvas.snapshot(new SnapshotParameters(), new WritableImage(width, height));
+            BufferedImage bufferedImage = SwingFXUtils.fromFXImage(wImage, null);
+            BufferedImage bufferedImage1 = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
+            bufferedImage1.getGraphics().drawImage(bufferedImage, 0, 0, null);
             System.out.println(file.getName());
-            ImageIO.write(renderedImage, extension, file);
+            ImageIO.write(bufferedImage1, extension, file);
             if (file.exists()) {
                 isFileSaved = true;
             }
@@ -279,8 +283,8 @@ public class Controller {
     private void unsetTool(String tool) {
         switch (tool) {
             case "Brush":
-                Bridge.canvas.removeEventHandler(MouseEvent.MOUSE_DRAGGED, sample.Tools.brushDragged);
                 Bridge.canvas.removeEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.brushPressed);
+                Bridge.canvas.removeEventHandler(MouseEvent.MOUSE_DRAGGED, sample.Tools.brushDragged);
                 Bridge.canvas.removeEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.brushReleased);
                 break;
             case "Oval":

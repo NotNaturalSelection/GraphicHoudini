@@ -127,7 +127,7 @@
                   </Slider>
                </children>
             </HBox>
-            <CheckBox mnemonicParsing="false" prefHeight="21.0" prefWidth="53.0" text="Fill" textFill="#d3cdcd" fx:id="checkFill">
+            <CheckBox fx:id="checkFill" mnemonicParsing="false" prefHeight="21.0" prefWidth="53.0" text="Fill" textFill="#d3cdcd">
                <VBox.margin>
                   <Insets left="10.0" />
                </VBox.margin>

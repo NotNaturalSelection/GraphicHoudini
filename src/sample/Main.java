@@ -24,7 +24,7 @@ public class Main extends Application {
         FXMLLoader loader = new FXMLLoader();
         Parent root = loader.load(getClass().getResource("sample.fxml").openStream());
         setAccelerators();
-        primaryStage.setTitle("Hello World");
+        primaryStage.setTitle("Graphic Houdini");
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
         primaryStage.setMaximized(true);
