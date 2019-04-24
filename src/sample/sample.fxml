@@ -67,7 +67,7 @@
                   <Insets left="1000.0" />
                </HBox.margin>
             </Label>
-            <Slider prefHeight="30.0" prefWidth="140.0" >
+            <Slider prefHeight="30.0" prefWidth="140.0">
                <HBox.margin>
                   <Insets />
                </HBox.margin>
@@ -115,18 +115,23 @@
             </HBox>
             <HBox prefHeight="40.0" prefWidth="200.0">
                <children>
-                  <Label prefHeight="17.0" prefWidth="70.0" text="Size: 1.0" textFill="#d3cdcd" fx:id="labelSliderSize">
+                  <Label fx:id="labelSliderSize" prefHeight="17.0" prefWidth="70.0" text="Size: 1.0" textFill="#d3cdcd">
                      <HBox.margin>
                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                      </HBox.margin>
                   </Label>
-                  <Slider prefHeight="25.0" prefWidth="150.0" fx:id="sliderSize">
+                  <Slider fx:id="sliderSize" prefHeight="25.0" prefWidth="150.0">
                      <HBox.margin>
                         <Insets top="7.0" />
                      </HBox.margin>
                   </Slider>
                </children>
             </HBox>
+            <CheckBox mnemonicParsing="false" prefHeight="21.0" prefWidth="53.0" text="Fill" textFill="#d3cdcd" fx:id="checkFill">
+               <VBox.margin>
+                  <Insets left="10.0" />
+               </VBox.margin>
+            </CheckBox>
          </children>
       </VBox>
    </right>

@@ -1,18 +1,10 @@
 package sample;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableArray;
-import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
-import javafx.scene.effect.Effect;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
@@ -21,14 +13,9 @@ import javafx.scene.paint.Color;
 import javafx.stage.*;
 import javafx.scene.canvas.Canvas;
 import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Optional;
 
 public class Controller {
@@ -77,6 +64,8 @@ public class Controller {
     protected Slider sliderSize;
     @FXML
     protected Label labelSliderSize;
+    @FXML
+    protected CheckBox checkFill;
 
 
     //***************************************************************************
@@ -86,7 +75,7 @@ public class Controller {
         Canvas canvas = new Canvas(1600, 900);
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.setFill(Color.WHITE);
-        gc.fillRect(0,0,1600,900);
+        gc.fillRect(0, 0, 1600, 900);
         setToView(tabPane.getSelectionModel().getSelectedItem(), canvas);
 //        Stage dialogWindowStage = new Stage();
 //        InputStream stream = getClass().getResourceAsStream("dialogNewFileWindow.fxml");
@@ -102,7 +91,7 @@ public class Controller {
 //        } catch (IOException e) {
 //            Bridge.alertErrorMessage("An error while creating file", "File was not created");
 //        }
-//        TODO УБРАНО НА ВРЕМЯ ТЕСТОВ, ВЕРНУТЬ И ПЕРЕДЕЛАТЬ
+//        fixme УБРАНО НА ВРЕМЯ ТЕСТОВ, ВЕРНУТЬ И ПЕРЕДЕЛАТЬ
     }
 
     @FXML
@@ -182,7 +171,7 @@ public class Controller {
     }
 
     @FXML
-    private void btnUndo(){
+    private void btnUndo() {
         Bridge.graphicsContext.restore();
     }
 
@@ -224,13 +213,13 @@ public class Controller {
         canvas.addEventHandler(MouseEvent.MOUSE_MOVED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                CursorPositionLabel.setText("Cursor: "+ event.getX()+":"+event.getY());
+                CursorPositionLabel.setText("Cursor: " + event.getX() + ":" + event.getY());
             }
         });
         canvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                CursorPositionLabel.setText("Cursor: "+ event.getX()+":"+event.getY());
+                CursorPositionLabel.setText("Cursor: " + event.getX() + ":" + event.getY());
             }
         });
         Bridge.graphicsContext = canvas.getGraphicsContext2D();
@@ -285,7 +274,8 @@ public class Controller {
                 break;
         }
     }
-//todo поправить смену инструментов после их наладки
+
+    //todo поправить смену инструментов после их наладки
     private void unsetTool(String tool) {
         switch (tool) {
             case "Brush":
