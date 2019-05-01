@@ -3,13 +3,18 @@ package sample;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 import java.math.BigDecimal;
@@ -20,7 +25,7 @@ public class Main extends Application {
 
 
     @Override
-    public void start(Stage primaryStage) throws Exception{
+    public void start(Stage primaryStage) throws Exception {
         FXMLLoader loader = new FXMLLoader();
         Parent root = loader.load(getClass().getResource("sample.fxml").openStream());
         setAccelerators();
@@ -36,7 +41,7 @@ public class Main extends Application {
         launch(args);
     }
 
-    private void setAccelerators(){
+    private void setAccelerators() {
         Bridge.controller.newFile.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN));
         Bridge.controller.openFile.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
         Bridge.controller.saveFile.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
@@ -58,5 +63,11 @@ public class Main extends Application {
                 Bridge.controller.labelSliderSize.setText("Size: " + new BigDecimal(newValue.doubleValue()).setScale(3, RoundingMode.UP).doubleValue());
             }
         });
+            Bridge.controller.tabPane.getSelectionModel().getSelectedItem().setOnSelectionChanged(new EventHandler<Event>() {
+                @Override
+                public void handle(Event event) {
+                    Bridge.controller.setTool(Bridge.controller.Tools.getText());
+                }
+            });
     }
 }

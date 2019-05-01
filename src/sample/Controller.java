@@ -1,6 +1,7 @@
 package sample;
 
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -109,9 +110,14 @@ public class Controller {
         c++;
         tab.setText("Untitled Tab " + c);
         tab.setContent(new BorderPane());
+        tab.setOnSelectionChanged(new EventHandler<Event>() {
+            @Override
+            public void handle(Event event) {
+                Bridge.controller.setTool(Bridge.controller.Tools.getText());
+            }
+        });
         tabPane.getTabs().add(tab);
         tabPane.getSelectionModel().select(tab);
-
     }
 
     @FXML
@@ -204,37 +210,36 @@ public class Controller {
     @FXML
     private void toolLine() {
         Tools.setText("Line");
-        setTool("Line", Bridge.canvas);
+        setTool("Line");
     }
 
     @FXML
     private void toolOval() {
         Tools.setText("Oval");
-        setTool("Oval", Bridge.canvas);
+        setTool("Oval");
     }
 
     @FXML
     private void toolBrush() {
         Tools.setText("Brush");
-        setTool("Brush", Bridge.canvas);
+        setTool("Brush");
     }
 
     @FXML
     private void toolRectangle() {
         Tools.setText("Rectangle");
-        setTool("Rectangle", Bridge.canvas);
+        setTool("Rectangle");
     }
 
     @FXML
     private void toolText() {
         Tools.setText("Text");
-        setTool("Text", Bridge.canvas);
+        setTool("Text");
     }
 
 
     void setToView(Tab tab, Canvas canvas) {
         ((BorderPane) tab.getContent()).setCenter(canvas);
-        Bridge.canvas = canvas;
         canvas.addEventHandler(MouseEvent.MOUSE_MOVED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -248,7 +253,7 @@ public class Controller {
             }
         });
         if (toolFlag) {
-            setTool(Tools.getText(), Bridge.canvas);
+            setTool(Tools.getText());
         }
         Bridge.graphicsContext = canvas.getGraphicsContext2D();
         imageSize.setText("Size: " + (int) canvas.getWidth() + "*" + (int) canvas.getHeight() + " px");
@@ -278,61 +283,69 @@ public class Controller {
         Bridge.controller = this;
     }
 
-    private void setTool(String tool, Canvas canvas) {
+    protected void setTool(String tool) {
         unsetTool(this.tool);
-        if (canvas != null) {
-            switch (tool) {
-                case "Brush":
-                    this.tool = tool;
-                    canvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, sample.Tools.brushDragged);
-                    canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.brushPressed);
-                    canvas.addEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.brushReleased);
-                    break;
-                case "Oval":
-                    this.tool = tool;
-                    canvas.addEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.ovalReleased);
-                    canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.ovalPressed);
-                    break;
-                case "Line":
-                    this.tool = tool;
-                    Bridge.canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.linePressed);
-                    Bridge.canvas.addEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.lineReleased);
-                    break;
-                case "Rectangle":
-                    this.tool = tool;
-                    Bridge.canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.rectPressed);
-                    Bridge.canvas.addEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.rectReleased);
-                    break;
-                case "Text":
-                    this.tool = tool;
-                    Bridge.canvas.addEventHandler(MouseEvent.MOUSE_CLICKED, sample.Tools.textClicked);
-                    break;
+        for (Tab tab : tabPane.getTabs()) {
+            Canvas canvas = (Canvas) ((BorderPane) tab.getContent()).getCenter();
+            if (canvas != null) {
+                switch (tool) {
+                    case "Brush":
+                        this.tool = tool;
+                        canvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, sample.Tools.brushDragged);
+                        canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.brushPressed);
+                        canvas.addEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.brushReleased);
+                        break;
+                    case "Oval":
+                        this.tool = tool;
+                        canvas.addEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.ovalReleased);
+                        canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.ovalPressed);
+                        break;
+                    case "Line":
+                        this.tool = tool;
+                        canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.linePressed);
+                        canvas.addEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.lineReleased);
+                        break;
+                    case "Rectangle":
+                        this.tool = tool;
+                        canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.rectPressed);
+                        canvas.addEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.rectReleased);
+                        break;
+                    case "Text":
+                        this.tool = tool;
+                        canvas.addEventHandler(MouseEvent.MOUSE_CLICKED, sample.Tools.textClicked);
+                        break;
+                }
+            } else {
+                toolFlag = true;
             }
-        } else {
-            toolFlag = true;
         }
     }
 
     //todo поправить смену инструментов и обрабатывать их установку при новой вкладке и тд
     private void unsetTool(String tool) {
-        switch (tool) {
-            case "Brush":
-                Bridge.canvas.removeEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.brushPressed);
-                Bridge.canvas.removeEventHandler(MouseEvent.MOUSE_DRAGGED, sample.Tools.brushDragged);
-                Bridge.canvas.removeEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.brushReleased);
-                break;
-            case "Oval":
-                Bridge.canvas.removeEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.ovalPressed);
-                Bridge.canvas.removeEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.ovalReleased);
-                break;
-            case "Line":
-                Bridge.canvas.removeEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.linePressed);
-                Bridge.canvas.removeEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.lineReleased);
-                break;
-            case "Rectangle":
-                Bridge.canvas.removeEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.rectPressed);
-                Bridge.canvas.removeEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.rectReleased);
-                break;
+        for (Tab tab : tabPane.getTabs()) {
+            Canvas canvas = (Canvas) ((BorderPane) tab.getContent()).getCenter();
+            if (canvas != null) {
+                switch (tool) {
+                    case "Brush":
+                        canvas.removeEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.brushPressed);
+                        canvas.removeEventHandler(MouseEvent.MOUSE_DRAGGED, sample.Tools.brushDragged);
+                        canvas.removeEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.brushReleased);
+                        break;
+                    case "Oval":
+                        canvas.removeEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.ovalPressed);
+                        canvas.removeEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.ovalReleased);
+                        break;
+                    case "Line":
+                        canvas.removeEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.linePressed);
+                        canvas.removeEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.lineReleased);
+                        break;
+                    case "Rectangle":
+                        canvas.removeEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.rectPressed);
+                        canvas.removeEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.rectReleased);
+                        break;
+                }
+            }
         }
     }
 }
