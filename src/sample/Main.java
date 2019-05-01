@@ -1,8 +1,12 @@
 package sample;
 
 import javafx.application.Application;
+import javafx.beans.InvalidationListener;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -15,10 +19,15 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 
 
 public class Main extends Application {
@@ -63,11 +72,14 @@ public class Main extends Application {
                 Bridge.controller.labelSliderSize.setText("Size: " + new BigDecimal(newValue.doubleValue()).setScale(3, RoundingMode.UP).doubleValue());
             }
         });
-            Bridge.controller.tabPane.getSelectionModel().getSelectedItem().setOnSelectionChanged(new EventHandler<Event>() {
-                @Override
-                public void handle(Event event) {
-                    Bridge.controller.setTool(Bridge.controller.Tools.getText());
-                }
-            });
+        Bridge.controller.tabPane.getSelectionModel().getSelectedItem().setOnSelectionChanged(new EventHandler<Event>() {
+            @Override
+            public void handle(Event event) {
+                Bridge.controller.setTool(Bridge.controller.Tools.getText());
+            }
+        });
+        ObservableList<String> fonts = FXCollections.observableArrayList(Font.getFamilies());
+        Bridge.controller.Fonts.setItems(fonts);
+        Bridge.controller.Fonts.setValue("Calibri");
     }
 }

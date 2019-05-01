@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import javafx.scene.effect.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.image.*?>
@@ -23,8 +24,8 @@
                         <MenuItem fx:id="newFile" mnemonicParsing="false" onAction="#btnNewFile" text="New file" />
                         <MenuItem fx:id="newTab" mnemonicParsing="false" onAction="#btnNewTab" text="New tab" />
                         <MenuItem fx:id="openFile" mnemonicParsing="false" onAction="#btnOpenFile" text="Open..." />
-                        <MenuItem mnemonicParsing="false" text="Next tab" fx:id="btnNextTab" onAction="#btnNextTab"/>
-                        <MenuItem mnemonicParsing="false" text="Previous tab" fx:id="btnPreviousTab" onAction="#btnPreviousTab"/>
+                        <MenuItem fx:id="btnNextTab" mnemonicParsing="false" onAction="#btnNextTab" text="Next tab" />
+                        <MenuItem fx:id="btnPreviousTab" mnemonicParsing="false" onAction="#btnPreviousTab" text="Previous tab" />
                         <SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem fx:id="saveFile" mnemonicParsing="false" onAction="#btnSave" text="Save" />
                         <MenuItem fx:id="saveAs" mnemonicParsing="false" onAction="#btnSaveAs" text="Save as..." />
@@ -95,6 +96,7 @@
                         <MenuItem fx:id="arc" mnemonicParsing="false" onAction="#toolOval" text="Oval" />
                         <MenuItem fx:id="rectangle" mnemonicParsing="false" onAction="#toolRectangle" text="Rectangle" />
                         <MenuItem fx:id="text" mnemonicParsing="false" onAction="#toolText" text="Text" />
+                        <MenuItem fx:id="quadraticCurve" mnemonicParsing="false" onAction="#toolQuadraticCurve" text="Quadratic curve"/>
                     </items>
                      <HBox.margin>
                         <Insets top="7.0" />
@@ -102,6 +104,7 @@
                   </SplitMenuButton>
                </children>
             </HBox>
+            <Separator prefWidth="200.0" />
             <HBox prefHeight="40.0" prefWidth="250.0">
                <children>
                   <Label prefHeight="17.0" prefWidth="70.0" text="Color" textFill="#d3cdcd">
@@ -135,6 +138,58 @@
                   <Insets left="10.0" />
                </VBox.margin>
             </CheckBox>
+            <HBox prefHeight="49.0" prefWidth="250.0">
+               <children>
+                  <Label text="Text:" textFill="#d3cdcd">
+                     <HBox.margin>
+                        <Insets left="10.0" top="14.0" />
+                     </HBox.margin>
+                  </Label>
+                  <TextField fx:id="textFieldForTool" prefHeight="31.0" prefWidth="184.0">
+                     <HBox.margin>
+                        <Insets left="10.0" top="10.0" />
+                     </HBox.margin>
+                  </TextField>
+               </children>
+            </HBox>
+            <HBox prefHeight="51.0" prefWidth="250.0">
+               <children>
+                  <Label text="Font size:" textFill="#d3cdcd">
+                     <HBox.margin>
+                        <Insets left="10.0" top="14.0" />
+                     </HBox.margin>
+                  </Label>
+                  <TextField fx:id="fontSize" prefHeight="31.0" prefWidth="53.0">
+                     <HBox.margin>
+                        <Insets left="10.0" top="10.0" />
+                     </HBox.margin>
+                  </TextField>
+               </children>
+            </HBox>
+            <HBox prefHeight="29.0" prefWidth="250.0">
+               <children>
+                  <Label textFill="#d3cdcd" />
+                  <CheckBox fx:id="antialiasing" mnemonicParsing="false" text="Antialiasing" textFill="#d3cdcd">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </CheckBox>
+               </children>
+            </HBox>
+            <HBox>
+               <children>
+                  <Label text="Font:" textFill="#d3cdcd">
+                     <HBox.margin>
+                        <Insets left="10.0" right="5.0" top="5.0" />
+                     </HBox.margin>
+                  </Label>
+                  <ChoiceBox fx:id="Fonts" prefHeight="31.0" prefWidth="189.0">
+                     <VBox.margin>
+                        <Insets left="10.0" top="10.0" />
+                     </VBox.margin>
+                  </ChoiceBox>
+               </children>
+            </HBox>
          </children>
       </VBox>
    </right>

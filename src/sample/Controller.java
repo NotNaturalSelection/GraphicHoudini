@@ -75,7 +75,14 @@ public class Controller {
     protected MenuItem btnNextTab;
     @FXML
     protected MenuItem btnPreviousTab;
-
+    @FXML
+    protected TextField textFieldForTool;
+    @FXML
+    protected TextField fontSize;
+    @FXML
+    protected CheckBox antialiasing;
+    @FXML
+    protected ChoiceBox<String> Fonts;
 
     //***************************************************************************
 
@@ -237,6 +244,12 @@ public class Controller {
         setTool("Text");
     }
 
+    @FXML
+    private void toolQuadraticCurve() {
+        Tools.setText("Quadratic curve");
+        setTool("Quadratic curve");
+    }
+
 
     void setToView(Tab tab, Canvas canvas) {
         ((BorderPane) tab.getContent()).setCenter(canvas);
@@ -314,6 +327,11 @@ public class Controller {
                         this.tool = tool;
                         canvas.addEventHandler(MouseEvent.MOUSE_CLICKED, sample.Tools.textClicked);
                         break;
+                    case "Quadratic curve":
+                        this.tool = tool;
+                        canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.quadCurvePressed);
+                        canvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, sample.Tools.quadCurveDragged);
+                        break;
                 }
             } else {
                 toolFlag = true;
@@ -343,6 +361,13 @@ public class Controller {
                     case "Rectangle":
                         canvas.removeEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.rectPressed);
                         canvas.removeEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.rectReleased);
+                        break;
+                    case "Text":
+                        canvas.removeEventHandler(MouseEvent.MOUSE_CLICKED, sample.Tools.textClicked);
+                        break;
+                    case "Quadratic curve":
+                        canvas.removeEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.quadCurvePressed);
+                        canvas.removeEventHandler(MouseEvent.MOUSE_DRAGGED, sample.Tools.quadCurveDragged);
                         break;
                 }
             }
