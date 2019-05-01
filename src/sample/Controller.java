@@ -3,22 +3,22 @@ package sample;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.paint.Color;
 import javafx.stage.*;
 import javafx.scene.canvas.Canvas;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.BitSet;
+import java.io.InputStream;
 import java.util.Optional;
 
 public class Controller {
@@ -26,6 +26,7 @@ public class Controller {
     private String fileName;
     private String pathToSave = "";
     private boolean isFileSaved;
+    private boolean toolFlag;
     private File file;
     @FXML
     protected MenuItem brush;
@@ -69,31 +70,35 @@ public class Controller {
     protected Label labelSliderSize;
     @FXML
     protected CheckBox checkFill;
+    @FXML
+    protected MenuItem btnNextTab;
+    @FXML
+    protected MenuItem btnPreviousTab;
 
 
     //***************************************************************************
 
     @FXML
     private void btnNewFile() {
-        Canvas canvas = new Canvas(1600, 900);
-        GraphicsContext gc = canvas.getGraphicsContext2D();
-        gc.setFill(Color.WHITE);
-        gc.fillRect(0, 0, 1600, 900);
-        setToView(tabPane.getSelectionModel().getSelectedItem(), canvas);
-//        Stage dialogWindowStage = new Stage();
-//        InputStream stream = getClass().getResourceAsStream("dialogNewFileWindow.fxml");
-//        FXMLLoader loader = new FXMLLoader();
-//        try {
-//            Scene scene = new Scene(loader.load(stream));
-//            dialogWindowStage.setScene(scene);
-//            dialogWindowStage.setTitle("New File");
-//            dialogWindowStage.setResizable(false);
-//            dialogWindowStage.initModality(Modality.WINDOW_MODAL);
-//            dialogWindowStage.initOwner(menuBar.getScene().getWindow());
-//            dialogWindowStage.show();
-//        } catch (IOException e) {
-//            Bridge.alertErrorMessage("An error while creating file", "File was not created");
-//        }
+//        Canvas canvas = new Canvas(1600, 900);
+//        GraphicsContext gc = canvas.getGraphicsContext2D();
+//        gc.setFill(Color.WHITE);
+//        gc.fillRect(0, 0, 1600, 900);
+//        setToView(tabPane.getSelectionModel().getSelectedItem(), canvas);
+        Stage dialogWindowStage = new Stage();
+        InputStream stream = getClass().getResourceAsStream("dialogNewFileWindow.fxml");
+        FXMLLoader loader = new FXMLLoader();
+        try {
+            Scene scene = new Scene(loader.load(stream));
+            dialogWindowStage.setScene(scene);
+            dialogWindowStage.setTitle("New File");
+            dialogWindowStage.setResizable(false);
+            dialogWindowStage.initModality(Modality.WINDOW_MODAL);
+            dialogWindowStage.initOwner(menuBar.getScene().getWindow());
+            dialogWindowStage.show();
+        } catch (IOException e) {
+            Bridge.alertErrorMessage("An error while creating file", "File was not created");
+        }
 //        fixme УБРАНО НА ВРЕМЯ ТЕСТОВ, ВЕРНУТЬ И ПЕРЕДЕЛАТЬ
     }
 
@@ -174,6 +179,17 @@ public class Controller {
     }
 
     @FXML
+    private void btnNextTab() {
+        tabPane.getSelectionModel().selectNext();
+    }
+
+
+    @FXML
+    private void btnPreviousTab() {
+        tabPane.getSelectionModel().selectPrevious();
+    }
+
+    @FXML
     private void btnUndo() {
         Bridge.graphicsContext.restore();
     }
@@ -209,6 +225,12 @@ public class Controller {
         setTool("Rectangle", Bridge.canvas);
     }
 
+    @FXML
+    private void toolText() {
+        Tools.setText("Text");
+        setTool("Text", Bridge.canvas);
+    }
+
 
     void setToView(Tab tab, Canvas canvas) {
         ((BorderPane) tab.getContent()).setCenter(canvas);
@@ -225,6 +247,9 @@ public class Controller {
                 CursorPositionLabel.setText("Cursor: " + event.getX() + ":" + event.getY());
             }
         });
+        if (toolFlag) {
+            setTool(Tools.getText(), Bridge.canvas);
+        }
         Bridge.graphicsContext = canvas.getGraphicsContext2D();
         imageSize.setText("Size: " + (int) canvas.getWidth() + "*" + (int) canvas.getHeight() + " px");
         tab.setText(Bridge.controller.fileName);
@@ -255,31 +280,40 @@ public class Controller {
 
     private void setTool(String tool, Canvas canvas) {
         unsetTool(this.tool);
-        switch (tool) {
-            case "Brush":
-                this.tool = tool;
-                canvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, sample.Tools.brushDragged);
-                canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.brushPressed);
-                canvas.addEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.brushReleased);
-                break;
-            case "Oval":
-                this.tool = tool;
-                canvas.addEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.ovalReleased);
-                canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.ovalPressed);
-                break;
-            case "Line":
-                this.tool = tool;
-                Bridge.canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.linePressed);
-                Bridge.canvas.addEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.lineReleased);
-                break;
-            case "Rectangle":
-                Bridge.canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.rectPressed);
-                Bridge.canvas.addEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.rectReleased);
-                break;
+        if (canvas != null) {
+            switch (tool) {
+                case "Brush":
+                    this.tool = tool;
+                    canvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, sample.Tools.brushDragged);
+                    canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.brushPressed);
+                    canvas.addEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.brushReleased);
+                    break;
+                case "Oval":
+                    this.tool = tool;
+                    canvas.addEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.ovalReleased);
+                    canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.ovalPressed);
+                    break;
+                case "Line":
+                    this.tool = tool;
+                    Bridge.canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.linePressed);
+                    Bridge.canvas.addEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.lineReleased);
+                    break;
+                case "Rectangle":
+                    this.tool = tool;
+                    Bridge.canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.rectPressed);
+                    Bridge.canvas.addEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.rectReleased);
+                    break;
+                case "Text":
+                    this.tool = tool;
+                    Bridge.canvas.addEventHandler(MouseEvent.MOUSE_CLICKED, sample.Tools.textClicked);
+                    break;
+            }
+        } else {
+            toolFlag = true;
         }
     }
 
-    //todo поправить смену инструментов после их наладки
+    //todo поправить смену инструментов и обрабатывать их установку при новой вкладке и тд
     private void unsetTool(String tool) {
         switch (tool) {
             case "Brush":

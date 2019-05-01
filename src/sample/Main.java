@@ -45,6 +45,8 @@ public class Main extends Application {
         Bridge.controller.tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
         Bridge.controller.closeCurrentTab.setAccelerator(new KeyCodeCombination(KeyCode.W, KeyCombination.CONTROL_DOWN));
         Bridge.controller.undo.setAccelerator(new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN));
+        Bridge.controller.btnNextTab.setAccelerator(new KeyCodeCombination(KeyCode.TAB, KeyCombination.CONTROL_DOWN));
+        Bridge.controller.btnPreviousTab.setAccelerator(new KeyCodeCombination(KeyCode.TAB, KeyCombination.SHIFT_DOWN));
         Bridge.controller.sliderSize.setMin(1);
         Bridge.controller.sliderSize.setMax(10);
         Bridge.controller.sliderSize.setBlockIncrement(1);

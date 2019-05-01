@@ -57,6 +57,30 @@
             </AnchorPane>
          </children>
       </HBox>
+      <HBox prefHeight="100.0" prefWidth="200.0">
+         <children>
+            <Label text="Resolution: ">
+               <font>
+                  <Font size="18.0" />
+               </font>
+               <HBox.margin>
+                  <Insets left="10.0" />
+               </HBox.margin>
+            </Label>
+            <TextField prefHeight="16.0" prefWidth="73.0" fx:id="fileWidth"/>
+            <Label text="X">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <TextField prefHeight="31.0" prefWidth="72.0" fx:id="fileHeight"/>
+            <Label text="px">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+         </children>
+      </HBox>
       <HBox prefHeight="65.0" prefWidth="300.0">
          <children>
             <Button fx:id="btnOK" defaultButton="true" mnemonicParsing="false" onAction="#btnOK" prefHeight="25.0" prefWidth="143.0" text="OK">

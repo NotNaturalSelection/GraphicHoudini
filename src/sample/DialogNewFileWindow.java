@@ -27,12 +27,18 @@ public class DialogNewFileWindow {
     protected Button btnCancel;
     @FXML
     protected MenuButton menuButton;
-
+    @FXML
+    protected TextField fileWidth;
+    @FXML
+    protected TextField fileHeight;
     //**************************************************************************
 
-    public DialogNewFileWindow(){}
+    public DialogNewFileWindow() {
+    }
 
     protected void createNewFile() {
+        int width = Integer.parseInt(fileWidth.getText());
+        int height = Integer.parseInt(fileHeight.getText());
 
         File picFile = new File(fileName.getText() + menuButton.getText());
         if (picFile.exists()) {
@@ -43,10 +49,10 @@ public class DialogNewFileWindow {
                     if (Bridge.controller.tabPane.getSelectionModel().getSelectedItem() == null) {
                         Bridge.controller.btnNewTab();
                     }
-                    Canvas canvas = new Canvas(1600, 900);
+                    Canvas canvas = new Canvas(width, height);
                     GraphicsContext gc = canvas.getGraphicsContext2D();
                     gc.setFill(Color.WHITE);
-                    gc.fillRect(0,0,1600,900);
+                    gc.fillRect(0, 0, width, height);
                     Bridge.controller.setToView(Bridge.controller.tabPane.getSelectionModel().getSelectedItem(), canvas);
                     Bridge.fileName = fileName.getText() + menuButton.getText();
                     Bridge.extension = Bridge.fileName.split("\\.")[1];
@@ -66,8 +72,12 @@ public class DialogNewFileWindow {
             if (fileName.getText().isEmpty()) {
                 Bridge.alertErrorMessage("An error occurred while creating the file", "Enter the filename first");
             } else {
-                createNewFile();
-                exit();
+                try {
+                    createNewFile();
+                    exit();
+                } catch (NumberFormatException e) {
+                    Bridge.alertErrorMessage("Wrong resolution format", "Resolution must be declared as numbers");
+                }
             }
         }
     }

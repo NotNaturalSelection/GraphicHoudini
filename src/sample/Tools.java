@@ -119,6 +119,14 @@ public class Tools {
             }
         }
     };
+    static final EventHandler<MouseEvent> textClicked = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent event) {
+            setColor();
+            Bridge.graphicsContext.strokeText("test",event.getX(), event.getY());
+        }
+    };
+
 
     static void setColor() {
         Bridge.graphicsContext.setStroke(Bridge.controller.colorPicker.getValue());

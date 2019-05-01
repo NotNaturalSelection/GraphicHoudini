@@ -23,6 +23,8 @@
                         <MenuItem fx:id="newFile" mnemonicParsing="false" onAction="#btnNewFile" text="New file" />
                         <MenuItem fx:id="newTab" mnemonicParsing="false" onAction="#btnNewTab" text="New tab" />
                         <MenuItem fx:id="openFile" mnemonicParsing="false" onAction="#btnOpenFile" text="Open..." />
+                        <MenuItem mnemonicParsing="false" text="Next tab" fx:id="btnNextTab" onAction="#btnNextTab"/>
+                        <MenuItem mnemonicParsing="false" text="Previous tab" fx:id="btnPreviousTab" onAction="#btnPreviousTab"/>
                         <SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem fx:id="saveFile" mnemonicParsing="false" onAction="#btnSave" text="Save" />
                         <MenuItem fx:id="saveAs" mnemonicParsing="false" onAction="#btnSaveAs" text="Save as..." />
@@ -86,12 +88,13 @@
                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                      </HBox.margin>
                   </Label>
-                  <SplitMenuButton fx:id="Tools" mnemonicParsing="false" prefHeight="30.0" prefWidth="150.0" text="SplitMenuButton">
+                  <SplitMenuButton fx:id="Tools" mnemonicParsing="false" prefHeight="30.0" prefWidth="150.0" text="Tools">
                     <items>
                         <MenuItem fx:id="brush" mnemonicParsing="false" onAction="#toolBrush" text="Brush" />
                         <MenuItem fx:id="line" mnemonicParsing="false" onAction="#toolLine" text="Line" />
                         <MenuItem fx:id="arc" mnemonicParsing="false" onAction="#toolOval" text="Oval" />
                         <MenuItem fx:id="rectangle" mnemonicParsing="false" onAction="#toolRectangle" text="Rectangle" />
+                        <MenuItem fx:id="text" mnemonicParsing="false" onAction="#toolText" text="Text" />
                     </items>
                      <HBox.margin>
                         <Insets top="7.0" />
