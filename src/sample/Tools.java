@@ -143,11 +143,8 @@ class Tools {
                 GraphicsContext graphicsContext = getGraphicsContext();
                 setColor();
                 setFillColor();
-                if (Bridge.controller.antialiasing.isSelected()) {
-                    graphicsContext.setFontSmoothingType(FontSmoothingType.GRAY);
-                }
                 graphicsContext.setLineWidth(Bridge.controller.sliderSize.getValue());
-                graphicsContext.setFont(Font.font(Bridge.controller.Fonts.getSelectionModel().getSelectedItem(), Double.parseDouble(Bridge.controller.fontSize.getText())));
+                graphicsContext.setFont(Font.font(Bridge.controller.Fonts.getSelectionModel().getSelectedItem(), Double.parseDouble(Bridge.controller.fontSize.getValue())));
                 if (Bridge.controller.checkFill.isSelected()) {
                     graphicsContext.fillText(Bridge.controller.textFieldForTool.getText(), event.getX(), event.getY());
                 } else {

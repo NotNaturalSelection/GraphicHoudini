@@ -58,7 +58,6 @@ public class Main extends Application {
         Bridge.controller.newTab.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN));
         Bridge.controller.tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
         Bridge.controller.closeCurrentTab.setAccelerator(new KeyCodeCombination(KeyCode.W, KeyCombination.CONTROL_DOWN));
-        Bridge.controller.undo.setAccelerator(new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN));
         Bridge.controller.btnNextTab.setAccelerator(new KeyCodeCombination(KeyCode.TAB, KeyCombination.CONTROL_DOWN));
         Bridge.controller.btnPreviousTab.setAccelerator(new KeyCodeCombination(KeyCode.TAB, KeyCombination.SHIFT_DOWN));
         Bridge.controller.sliderSize.setMin(1);
@@ -79,7 +78,14 @@ public class Main extends Application {
             }
         });
         ObservableList<String> fonts = FXCollections.observableArrayList(Font.getFamilies());
+        ObservableList<String> fontSizes = FXCollections.observableArrayList("1", "2", "3", "4", "5", "6", "7",
+                "8", "9", "10", "11", "12", "14", "16", "18", "20", "22", "24", "26", "28", "32", "36", "40", "44", "48",
+                "52", "56", "60", "64", "68", "72", "78", "84", "90", "96", "108", "120", "138", "156", "174", "192", "200",
+                "225", "250", "275", "300");
+        Bridge.controller.fontSize.setItems(fontSizes);
+        Bridge.controller.fontSize.setValue("12");
         Bridge.controller.Fonts.setItems(fonts);
         Bridge.controller.Fonts.setValue("Calibri");
+        Bridge.controller.hideElements("Everything");
     }
 }

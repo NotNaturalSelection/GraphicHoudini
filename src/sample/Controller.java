@@ -7,11 +7,13 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.*;
 import javafx.scene.canvas.Canvas;
 
@@ -21,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
+import static javafx.scene.paint.Color.WHITE;
 
 public class Controller {
     private String tool = "";
@@ -58,8 +61,6 @@ public class Controller {
     @FXML
     protected MenuItem newTab;
     @FXML
-    protected MenuItem undo;
-    @FXML
     protected Label imageSize;
     @FXML
     protected MenuItem closeCurrentTab;
@@ -76,23 +77,26 @@ public class Controller {
     @FXML
     protected MenuItem btnPreviousTab;
     @FXML
-    protected TextField textFieldForTool;
+    protected TextArea textFieldForTool;
     @FXML
-    protected TextField fontSize;
-    @FXML
-    protected CheckBox antialiasing;
+    protected ChoiceBox<String> fontSize;
     @FXML
     protected ChoiceBox<String> Fonts;
+    @FXML
+    protected HBox sliderSizeHBox;
+    @FXML
+    protected HBox checkFillHBox;
+    @FXML
+    protected HBox textForToolHBox;
+    @FXML
+    protected HBox fontSizeHBox;
+    @FXML
+    protected HBox fontHBox;
 
     //***************************************************************************
 
     @FXML
     private void btnNewFile() {
-//        Canvas canvas = new Canvas(1600, 900);
-//        GraphicsContext gc = canvas.getGraphicsContext2D();
-//        gc.setFill(Color.WHITE);
-//        gc.fillRect(0, 0, 1600, 900);
-//        setToView(tabPane.getSelectionModel().getSelectedItem(), canvas);
         Stage dialogWindowStage = new Stage();
         InputStream stream = getClass().getResourceAsStream("dialogNewFileWindow.fxml");
         FXMLLoader loader = new FXMLLoader();
@@ -107,15 +111,14 @@ public class Controller {
         } catch (IOException e) {
             Bridge.alertErrorMessage("An error while creating file", "File was not created");
         }
-//        fixme УБРАНО НА ВРЕМЯ ТЕСТОВ, ВЕРНУТЬ И ПЕРЕДЕЛАТЬ
     }
 
     @FXML
     protected void btnNewTab() {
         Tab tab = new Tab();
-        int c = tabPane.getTabs().size();
-        c++;
-        tab.setText("Untitled Tab " + c);
+        int counter = tabPane.getTabs().size();
+        counter++;
+        tab.setText("Untitled Tab " + counter);
         tab.setContent(new BorderPane());
         tab.setOnSelectionChanged(new EventHandler<Event>() {
             @Override
@@ -184,11 +187,20 @@ public class Controller {
             alert.setContentText("Some files are not saved");
         }
         Optional<ButtonType> option = alert.showAndWait();
-        if (option.get() == ButtonType.OK) {
-            System.exit(0);
-        } else if (option.get() == ButtonType.CANCEL) {
-            alert.close();
+        if(option.isPresent()) {
+            if (option.get() == ButtonType.OK) {
+                System.exit(0);
+            } else if (option.get() == ButtonType.CANCEL) {
+                alert.close();
+            }
         }
+    }
+    @FXML
+    private void btnClear(){
+        Canvas canvas = ((Canvas)(((BorderPane)tabPane.getSelectionModel().getSelectedItem().getContent()).getCenter()));
+        GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
+        graphicsContext.setFill(WHITE);
+        graphicsContext.fillRect(0,0, canvas.getWidth(), canvas.getHeight());
     }
 
     @FXML
@@ -200,11 +212,6 @@ public class Controller {
     @FXML
     private void btnPreviousTab() {
         tabPane.getSelectionModel().selectPrevious();
-    }
-
-    @FXML
-    private void btnUndo() {
-        Bridge.graphicsContext.restore();
     }
 
     @FXML
@@ -268,7 +275,6 @@ public class Controller {
         if (toolFlag) {
             setTool(Tools.getText());
         }
-        Bridge.graphicsContext = canvas.getGraphicsContext2D();
         imageSize.setText("Size: " + (int) canvas.getWidth() + "*" + (int) canvas.getHeight() + " px");
         tab.setText(Bridge.controller.fileName);
     }
@@ -282,7 +288,6 @@ public class Controller {
             BufferedImage bufferedImage = SwingFXUtils.fromFXImage(wImage, null);
             BufferedImage bufferedImage1 = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
             bufferedImage1.getGraphics().drawImage(bufferedImage, 0, 0, null);
-            System.out.println(file.getName());
             ImageIO.write(bufferedImage1, extension, file);
             if (file.exists()) {
                 isFileSaved = true;
@@ -296,7 +301,7 @@ public class Controller {
         Bridge.controller = this;
     }
 
-    protected void setTool(String tool) {
+    void setTool(String tool) {
         unsetTool(this.tool);
         for (Tab tab : tabPane.getTabs()) {
             Canvas canvas = (Canvas) ((BorderPane) tab.getContent()).getCenter();
@@ -337,9 +342,9 @@ public class Controller {
                 toolFlag = true;
             }
         }
+        hideElements(tool);
     }
 
-    //todo поправить смену инструментов и обрабатывать их установку при новой вкладке и тд
     private void unsetTool(String tool) {
         for (Tab tab : tabPane.getTabs()) {
             Canvas canvas = (Canvas) ((BorderPane) tab.getContent()).getCenter();
@@ -372,5 +377,59 @@ public class Controller {
                 }
             }
         }
+        showElements();
+    }
+
+    void hideElements(String tool) {
+        switch (tool) {
+            case "Quadratic curve":
+            case "Brush":
+            case "Line":
+                fontHBox.managedProperty().bind(fontHBox.visibleProperty());
+                fontHBox.setVisible(false);
+                fontSizeHBox.managedProperty().bind(fontSizeHBox.visibleProperty());
+                fontSizeHBox.setVisible(false);
+                textForToolHBox.managedProperty().bind(textForToolHBox.visibleProperty());
+                textForToolHBox.setVisible(false);
+                checkFillHBox.managedProperty().bind(checkFillHBox.visibleProperty());
+                checkFillHBox.setVisible(false);
+                break;
+            case "Oval":
+            case "Rectangle":
+                fontHBox.managedProperty().bind(fontHBox.visibleProperty());
+                fontHBox.setVisible(false);
+                fontSizeHBox.managedProperty().bind(fontSizeHBox.visibleProperty());
+                fontSizeHBox.setVisible(false);
+                textForToolHBox.managedProperty().bind(textForToolHBox.visibleProperty());
+                textForToolHBox.setVisible(false);
+                break;
+            case "Text":
+                break;
+            case  "Everything":
+                fontHBox.managedProperty().bind(fontHBox.visibleProperty());
+                fontHBox.setVisible(false);
+                fontSizeHBox.managedProperty().bind(fontSizeHBox.visibleProperty());
+                fontSizeHBox.setVisible(false);
+                checkFillHBox.managedProperty().bind(checkFillHBox.visibleProperty());
+                checkFillHBox.setVisible(false);
+                textForToolHBox.managedProperty().bind(textForToolHBox.visibleProperty());
+                textForToolHBox.setVisible(false);
+                sliderSizeHBox.managedProperty().bind(sliderSizeHBox.visibleProperty());
+                sliderSizeHBox.setVisible(false);
+
+        }
+    }
+
+    private void showElements(){
+        fontHBox.managedProperty().bind(fontHBox.visibleProperty());
+        fontHBox.setVisible(true);
+        fontSizeHBox.managedProperty().bind(fontSizeHBox.visibleProperty());
+        fontSizeHBox.setVisible(true);
+        textForToolHBox.managedProperty().bind(textForToolHBox.visibleProperty());
+        textForToolHBox.setVisible(true);
+        checkFillHBox.managedProperty().bind(checkFillHBox.visibleProperty());
+        checkFillHBox.setVisible(true);
+        sliderSizeHBox.managedProperty().bind(sliderSizeHBox.visibleProperty());
+        sliderSizeHBox.setVisible(true);
     }
 }
