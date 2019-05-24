@@ -49,14 +49,15 @@ public class DialogNewFileWindow {
                     if (Bridge.controller.tabPane.getSelectionModel().getSelectedItem() == null) {
                         Bridge.controller.btnNewTab();
                     }
-                    Canvas canvas = new Canvas(width, height);
+                    ModifiedCanvas canvas = new ModifiedCanvas(width, height);
                     GraphicsContext gc = canvas.getGraphicsContext2D();
                     gc.setFill(Color.WHITE);
                     gc.fillRect(0, 0, width, height);
                     Bridge.controller.setToView(Bridge.controller.tabPane.getSelectionModel().getSelectedItem(), canvas);
-                    Bridge.fileName = fileName.getText() + menuButton.getText();
-                    Bridge.extension = Bridge.fileName.split("\\.")[1];
-                    Bridge.controller.tabPane.getSelectionModel().getSelectedItem().setText(Bridge.fileName);
+                    canvas.setFilename(fileName.getText());
+                    canvas.setExtension(menuButton.getText().replace(".", ""));
+                    Bridge.controller.tabPane.getSelectionModel().getSelectedItem().setText(canvas.getFilename() + canvas.getExtension());
+                    Bridge.controller.setTool(Bridge.controller.Tools.getText());
                 }
             } catch (IOException e) {
                 Bridge.alertErrorMessage("An error occurred while creating the file", "Permission denied");

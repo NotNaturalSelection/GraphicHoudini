@@ -9,13 +9,18 @@ import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.*;
-import javafx.scene.canvas.Canvas;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -23,15 +28,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
+
 import static javafx.scene.paint.Color.WHITE;
 
 public class Controller {
     private String tool = "";
     private String fileName;
-    private String pathToSave = "";
-    private boolean isFileSaved;
     private boolean toolFlag;
-    private File file;
+
     @FXML
     protected MenuItem brush;
     @FXML
@@ -52,8 +56,6 @@ public class Controller {
     protected MenuItem newFile;
     @FXML
     protected MenuItem openFile;
-    @FXML
-    protected MenuItem saveFile;
     @FXML
     protected MenuItem saveAs;
     @FXML
@@ -92,6 +94,14 @@ public class Controller {
     protected HBox fontSizeHBox;
     @FXML
     protected HBox fontHBox;
+    @FXML
+    protected MenuItem btnPaste;
+    @FXML
+    protected MenuItem btnCopy;
+    @FXML
+    protected MenuItem btnUndo;
+    @FXML
+    protected Label scaleLabel;
 
     //***************************************************************************
 
@@ -126,6 +136,7 @@ public class Controller {
                 Bridge.controller.setTool(Bridge.controller.Tools.getText());
             }
         });
+        tabCloseRequest(tab);
         tabPane.getTabs().add(tab);
         tabPane.getSelectionModel().select(tab);
     }
@@ -139,11 +150,10 @@ public class Controller {
         fileChooser.getExtensionFilters().add(filter);
         File file = fileChooser.showOpenDialog(menuBar.getScene().getWindow());
         Image img = new Image(file.toURI().toString());
-        Canvas canvas = new Canvas(img.getWidth(), img.getHeight());
+        ModifiedCanvas canvas = new ModifiedCanvas(img.getWidth(), img.getHeight());
         canvas.getGraphicsContext2D().drawImage(img, 0, 0);
         setToView(tabPane.getSelectionModel().getSelectedItem(), canvas);
         fileName = file.getName();
-        Bridge.extension = fileName.split("\\.")[fileName.split("\\.").length - 1];
         tabPane.getSelectionModel().getSelectedItem().setText(fileName);
 
     }
@@ -156,23 +166,11 @@ public class Controller {
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Pictures", "*.png"));
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Pictures", "*.bmp"));
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Pictures", "*.tiff"));
-        fileChooser.setInitialFileName(Bridge.fileName);
+        fileChooser.setInitialFileName(getSelectedCanvas().getFilename());
         fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
-        file = fileChooser.showSaveDialog(menuBar.getScene().getWindow());
+        File file = fileChooser.showSaveDialog(menuBar.getScene().getWindow());
         if (file != null) {
-            pathToSave = file.getAbsolutePath();
-            saveImageToFile(file, Bridge.extension);
-        }
-    }
-
-    @FXML
-    private void btnSave() {
-        if (pathToSave.isEmpty()) {
-            btnSaveAs();
-        } else {
-            if (!isFileSaved) {
-                saveImageToFile(file, Bridge.extension);
-            }
+            saveImageToFile(file, getSelectedCanvas().getExtension());
         }
     }
 
@@ -180,14 +178,20 @@ public class Controller {
     private void btnQuit() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Close the application?");
-        if (isFileSaved) {
+        boolean isFilesSaved = true;
+        for (Tab tab : tabPane.getTabs()) {
+            if (!getCanvasByTab(tab).isSaved()) {
+                isFilesSaved = false;
+            }
+        }
+        if (isFilesSaved) {
             alert.setHeaderText("Are you sure you want to exit the application?");
         } else {
             alert.setHeaderText("Are you sure you want to exit the application without saving files?");
             alert.setContentText("Some files are not saved");
         }
         Optional<ButtonType> option = alert.showAndWait();
-        if(option.isPresent()) {
+        if (option.isPresent()) {
             if (option.get() == ButtonType.OK) {
                 System.exit(0);
             } else if (option.get() == ButtonType.CANCEL) {
@@ -195,12 +199,13 @@ public class Controller {
             }
         }
     }
+
     @FXML
-    private void btnClear(){
-        Canvas canvas = ((Canvas)(((BorderPane)tabPane.getSelectionModel().getSelectedItem().getContent()).getCenter()));
+    private void btnClear() {
+        ModifiedCanvas canvas = Bridge.controller.getSelectedCanvas();
         GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
         graphicsContext.setFill(WHITE);
-        graphicsContext.fillRect(0,0, canvas.getWidth(), canvas.getHeight());
+        graphicsContext.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
     }
 
     @FXML
@@ -211,14 +216,17 @@ public class Controller {
 
     @FXML
     private void btnPreviousTab() {
-        tabPane.getSelectionModel().selectPrevious();
+        if (!tabPane.getSelectionModel().isSelected(0)) {
+            tabPane.getSelectionModel().selectPrevious();
+        } else {
+            tabPane.getSelectionModel().selectLast();
+        }
     }
 
     @FXML
     private void btnCloseTab() {
         Tab tab = tabPane.getSelectionModel().getSelectedItem();
         tabPane.getTabs().remove(tab);
-        //TODO если закрытие вкладки будет сопровождаться действием
     }
 
     @FXML
@@ -257,19 +265,54 @@ public class Controller {
         setTool("Quadratic curve");
     }
 
+    @FXML
+    private void btnPaste() {
+        Clipboard clipboard = Clipboard.getSystemClipboard();
+        System.out.println(clipboard.hasImage());
+        if (clipboard.hasImage()) {
+            ModifiedCanvas canvas = Bridge.controller.getSelectedCanvas();
+            if (canvas != null) {
+                canvas.getGraphicsContext2D().drawImage(clipboard.getImage(), 0, 0, canvas.getWidth(), canvas.getHeight());
+                canvas.getImageStack().push(clipboard.getImage());
+            }
+        }
+    }
 
-    void setToView(Tab tab, Canvas canvas) {
+    @FXML
+    private void btnCopy() {
+        Clipboard clipboard = Clipboard.getSystemClipboard();
+        ClipboardContent content = new ClipboardContent();
+        ModifiedCanvas canvas = Bridge.controller.getSelectedCanvas();
+        int width = (int) canvas.getWidth();
+        int height = (int) canvas.getHeight();
+        WritableImage wImage = canvas.snapshot(new SnapshotParameters(), new WritableImage(width, height));
+        content.putImage(wImage);
+        clipboard.setContent(content);
+    }
+
+    @FXML
+    private void btnUndo() {
+        ModifiedCanvas canvas = getSelectedCanvas();
+        if (canvas.getImageStack().size() > 1) {
+            canvas.getImageStack().pop();
+            Image image = canvas.getImageStack().peek();
+            canvas.getGraphicsContext2D().drawImage(image, 0, 0, canvas.getWidth(), canvas.getHeight());
+        }
+    }
+
+
+    void setToView(Tab tab, ModifiedCanvas canvas) {
         ((BorderPane) tab.getContent()).setCenter(canvas);
         canvas.addEventHandler(MouseEvent.MOUSE_MOVED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                CursorPositionLabel.setText("Cursor: " + event.getX() + ":" + event.getY());
+                CursorPositionLabel.setText("Cursor: " + (int)event.getX() + ":" + (int)event.getY());
             }
         });
         canvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                CursorPositionLabel.setText("Cursor: " + event.getX() + ":" + event.getY());
+                CursorPositionLabel.setText("Cursor: " + (int)event.getX() + ":" + (int)event.getY());
             }
         });
         if (toolFlag) {
@@ -281,17 +324,15 @@ public class Controller {
 
     private void saveImageToFile(File file, String extension) {
         try {
-            Canvas canvas = ((Canvas) ((BorderPane) tabPane.getSelectionModel().getSelectedItem().getContent()).getCenter());
+            ModifiedCanvas canvas = getSelectedCanvas();
             int width = (int) canvas.getWidth();
             int height = (int) canvas.getHeight();
             WritableImage wImage = canvas.snapshot(new SnapshotParameters(), new WritableImage(width, height));
             BufferedImage bufferedImage = SwingFXUtils.fromFXImage(wImage, null);
             BufferedImage bufferedImage1 = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
             bufferedImage1.getGraphics().drawImage(bufferedImage, 0, 0, null);
+            file.createNewFile();
             ImageIO.write(bufferedImage1, extension, file);
-            if (file.exists()) {
-                isFileSaved = true;
-            }
         } catch (IOException e) {
             Bridge.alertErrorMessage("An error occurred while saving the file", "Undefined error");
         }
@@ -304,7 +345,7 @@ public class Controller {
     void setTool(String tool) {
         unsetTool(this.tool);
         for (Tab tab : tabPane.getTabs()) {
-            Canvas canvas = (Canvas) ((BorderPane) tab.getContent()).getCenter();
+            ModifiedCanvas canvas = (ModifiedCanvas) ((BorderPane) tab.getContent()).getCenter();
             if (canvas != null) {
                 switch (tool) {
                     case "Brush":
@@ -347,7 +388,7 @@ public class Controller {
 
     private void unsetTool(String tool) {
         for (Tab tab : tabPane.getTabs()) {
-            Canvas canvas = (Canvas) ((BorderPane) tab.getContent()).getCenter();
+            ModifiedCanvas canvas = Bridge.controller.getSelectedCanvas();
             if (canvas != null) {
                 switch (tool) {
                     case "Brush":
@@ -405,7 +446,7 @@ public class Controller {
                 break;
             case "Text":
                 break;
-            case  "Everything":
+            case "Everything":
                 fontHBox.managedProperty().bind(fontHBox.visibleProperty());
                 fontHBox.setVisible(false);
                 fontSizeHBox.managedProperty().bind(fontSizeHBox.visibleProperty());
@@ -420,7 +461,7 @@ public class Controller {
         }
     }
 
-    private void showElements(){
+    private void showElements() {
         fontHBox.managedProperty().bind(fontHBox.visibleProperty());
         fontHBox.setVisible(true);
         fontSizeHBox.managedProperty().bind(fontSizeHBox.visibleProperty());
@@ -431,5 +472,46 @@ public class Controller {
         checkFillHBox.setVisible(true);
         sliderSizeHBox.managedProperty().bind(sliderSizeHBox.visibleProperty());
         sliderSizeHBox.setVisible(true);
+    }
+
+    private ModifiedCanvas getSelectedCanvas() {
+        return (ModifiedCanvas) ((BorderPane) tabPane.getSelectionModel().getSelectedItem().getContent()).getCenter();
+    }
+
+    void saveStep() {
+        ModifiedCanvas canvas = getSelectedCanvas();
+        WritableImage image = new WritableImage((int) canvas.getWidth(), (int) canvas.getHeight());
+        canvas.snapshot(new SnapshotParameters(), image);
+        canvas.getImageStack().push(image);
+    }
+
+    void tabCloseRequest(Tab tab) {
+        tab.setOnCloseRequest(new EventHandler<Event>() {
+            @Override
+            public void handle(Event event) {
+                ModifiedCanvas canvas = getCanvasByTab(tab);
+                if (canvas.isSaved()) {
+                    tabPane.getTabs().remove(tab);
+                } else {
+                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                    alert.setTitle("Close the tab?");
+                    alert.setHeaderText("Are you sure you want to close this tab without saving the file?");
+                    alert.setContentText("File is not saved");
+                    Optional<ButtonType> option = alert.showAndWait();
+                    if (option.isPresent()) {
+                        if (option.get() == ButtonType.OK) {
+                            tabPane.getTabs().remove(tab);
+                            alert.close();
+                        } else if (option.get() == ButtonType.CANCEL) {
+                            alert.close();
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    private ModifiedCanvas getCanvasByTab(Tab tab) {
+        return (ModifiedCanvas) (((BorderPane) (tab.getContent())).getCenter());
     }
 }

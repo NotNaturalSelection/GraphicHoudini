@@ -43,6 +43,7 @@ class Tools {
             } else {
                 graphicsContext.strokeOval(minX, minY, maxX - minX, maxY - minY);
             }
+            Bridge.controller.saveStep();
         }
     };
     static final EventHandler<MouseEvent> brushPressed = new EventHandler<MouseEvent>() {
@@ -74,6 +75,7 @@ class Tools {
             if (flag) {
                 graphicsContext.closePath();
                 flag = false;
+                Bridge.controller.saveStep();
             }
         }
     };
@@ -99,6 +101,7 @@ class Tools {
                 graphicsContext.setStroke(Bridge.controller.colorPicker.getValue());
                 graphicsContext.strokeLine(x, y, event.getX(), event.getY());
                 flag = false;
+                Bridge.controller.saveStep();
             }
         }
     };
@@ -133,6 +136,7 @@ class Tools {
                     graphicsContext.strokeRect(minX, minY, maxX - minX, maxY - minY);
                 }
                 flag = false;
+                Bridge.controller.saveStep();
             }
         }
     };
@@ -150,6 +154,7 @@ class Tools {
                 } else {
                     graphicsContext.strokeText(Bridge.controller.textFieldForTool.getText(), event.getX(), event.getY());
                 }
+                Bridge.controller.saveStep();
             } catch (NumberFormatException e) {
                 Bridge.alertErrorMessage("Wrong font size", "Font size must be declared as numbers");
             }
@@ -173,6 +178,7 @@ class Tools {
                 graphicsContext.closePath();
                 flag1 = false;
                 flag = false;
+                Bridge.controller.saveStep();
             }
         }
     };
@@ -186,24 +192,6 @@ class Tools {
             }
         }
     };
-//    static final EventHandler<MouseEvent> quadCurveReleased = new EventHandler<MouseEvent>() {
-//        @Override
-//        public void handle(MouseEvent event) {
-//            GraphicsContext graphicsContext = getGraphicsContext();
-//            if (flag1) {
-//                setColor();
-//                setLineWidth();
-//                graphicsContext.moveTo(x, y);
-//                graphicsContext.beginPath();
-//                graphicsContext.quadraticCurveTo(event.getX(), event.getY(), x1, y1);
-//                graphicsContext.stroke();
-//                graphicsContext.closePath();
-//                flag1 = false;
-//                flag = false;
-//            }
-//        }
-//    };
-
 
     private static void setColor() {
         GraphicsContext graphicsContext = getGraphicsContext();
@@ -223,19 +211,5 @@ class Tools {
     private static GraphicsContext getGraphicsContext() {
         return ((Canvas) ((BorderPane) (Bridge.controller.tabPane.getSelectionModel().getSelectedItem()).getContent()).getCenter()).getGraphicsContext2D();
     }
-//    static final List<EventHandler<MouseEvent>> brush = new ArrayList<>();
-//    static final List<EventHandler<MouseEvent>> arc = new ArrayList<>();
-//    static final List<EventHandler<MouseEvent>> line = new ArrayList<>();
-//    static {
-//        brush.add( brushDragged);
-//        brush.add( brushPressed);
-//        brush.add(brushReleased);
-//        line.add( linePressed);
-//        line.add(lineReleased);
-//        arc.add(arcPressed);
-//        arc.add(arcReleased);
-//    }
 
-
-    //public static final EventHandler<MouseEvent> rectangle;
 }

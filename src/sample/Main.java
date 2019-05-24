@@ -53,13 +53,16 @@ public class Main extends Application {
     private void setAccelerators() {
         Bridge.controller.newFile.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN));
         Bridge.controller.openFile.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
-        Bridge.controller.saveFile.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
+        Bridge.controller.saveAs.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
         Bridge.controller.quit.setAccelerator(new KeyCodeCombination(KeyCode.F4, KeyCombination.ALT_DOWN));
         Bridge.controller.newTab.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN));
         Bridge.controller.tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
         Bridge.controller.closeCurrentTab.setAccelerator(new KeyCodeCombination(KeyCode.W, KeyCombination.CONTROL_DOWN));
         Bridge.controller.btnNextTab.setAccelerator(new KeyCodeCombination(KeyCode.TAB, KeyCombination.CONTROL_DOWN));
         Bridge.controller.btnPreviousTab.setAccelerator(new KeyCodeCombination(KeyCode.TAB, KeyCombination.SHIFT_DOWN));
+        Bridge.controller.btnPaste.setAccelerator(new KeyCodeCombination(KeyCode.V, KeyCombination.CONTROL_DOWN));
+        Bridge.controller.btnCopy.setAccelerator(new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN));
+        Bridge.controller.btnUndo.setAccelerator(new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN));
         Bridge.controller.sliderSize.setMin(1);
         Bridge.controller.sliderSize.setMax(10);
         Bridge.controller.sliderSize.setBlockIncrement(1);
@@ -77,6 +80,9 @@ public class Main extends Application {
                 Bridge.controller.setTool(Bridge.controller.Tools.getText());
             }
         });
+        for (Tab tab:Bridge.controller.tabPane.getTabs()) {
+            Bridge.controller.tabCloseRequest(tab);
+        }
         ObservableList<String> fonts = FXCollections.observableArrayList(Font.getFamilies());
         ObservableList<String> fontSizes = FXCollections.observableArrayList("1", "2", "3", "4", "5", "6", "7",
                 "8", "9", "10", "11", "12", "14", "16", "18", "20", "22", "24", "26", "28", "32", "36", "40", "44", "48",
