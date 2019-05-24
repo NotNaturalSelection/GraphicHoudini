@@ -293,10 +293,12 @@ public class Controller {
     @FXML
     private void btnUndo() {
         ModifiedCanvas canvas = getSelectedCanvas();
-        if (canvas.getImageStack().size() > 1) {
-            canvas.getImageStack().pop();
-            Image image = canvas.getImageStack().peek();
-            canvas.getGraphicsContext2D().drawImage(image, 0, 0, canvas.getWidth(), canvas.getHeight());
+        if(canvas != null) {
+            if (canvas.getImageStack().size() > 1) {
+                canvas.getImageStack().pop();
+                Image image = canvas.getImageStack().peek();
+                canvas.getGraphicsContext2D().drawImage(image, 0, 0, canvas.getWidth(), canvas.getHeight());
+            }
         }
     }
 
