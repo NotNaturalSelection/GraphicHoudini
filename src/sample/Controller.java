@@ -203,9 +203,11 @@ public class Controller {
     @FXML
     private void btnClear() {
         ModifiedCanvas canvas = Bridge.controller.getSelectedCanvas();
-        GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
-        graphicsContext.setFill(WHITE);
-        graphicsContext.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        if(canvas != null) {
+            GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
+            graphicsContext.setFill(WHITE);
+            graphicsContext.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        }
     }
 
     @FXML
@@ -268,7 +270,6 @@ public class Controller {
     @FXML
     private void btnPaste() {
         Clipboard clipboard = Clipboard.getSystemClipboard();
-        System.out.println(clipboard.hasImage());
         if (clipboard.hasImage()) {
             ModifiedCanvas canvas = Bridge.controller.getSelectedCanvas();
             if (canvas != null) {
@@ -334,7 +335,7 @@ public class Controller {
             BufferedImage bufferedImage1 = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
             bufferedImage1.getGraphics().drawImage(bufferedImage, 0, 0, null);
             file.createNewFile();
-            ImageIO.write(bufferedImage1, extension, file);
+            ImageIO.write(bufferedImage, extension, file);
         } catch (IOException e) {
             Bridge.alertErrorMessage("An error occurred while saving the file", "Undefined error");
         }
@@ -492,20 +493,22 @@ public class Controller {
             @Override
             public void handle(Event event) {
                 ModifiedCanvas canvas = getCanvasByTab(tab);
-                if (canvas.isSaved()) {
-                    tabPane.getTabs().remove(tab);
-                } else {
-                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                    alert.setTitle("Close the tab?");
-                    alert.setHeaderText("Are you sure you want to close this tab without saving the file?");
-                    alert.setContentText("File is not saved");
-                    Optional<ButtonType> option = alert.showAndWait();
-                    if (option.isPresent()) {
-                        if (option.get() == ButtonType.OK) {
-                            tabPane.getTabs().remove(tab);
-                            alert.close();
-                        } else if (option.get() == ButtonType.CANCEL) {
-                            alert.close();
+                if(canvas != null) {
+                    if (canvas.isSaved()) {
+                        tabPane.getTabs().remove(tab);
+                    } else {
+                        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                        alert.setTitle("Close the tab?");
+                        alert.setHeaderText("Are you sure you want to close this tab without saving the file?");
+                        alert.setContentText("File is not saved");
+                        Optional<ButtonType> option = alert.showAndWait();
+                        if (option.isPresent()) {
+                            if (option.get() == ButtonType.OK) {
+                                tabPane.getTabs().remove(tab);
+                                alert.close();
+                            } else if (option.get() == ButtonType.CANCEL) {
+                                alert.close();
+                            }
                         }
                     }
                 }

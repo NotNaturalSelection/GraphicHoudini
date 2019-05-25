@@ -56,7 +56,7 @@ public class DialogNewFileWindow {
                     Bridge.controller.setToView(Bridge.controller.tabPane.getSelectionModel().getSelectedItem(), canvas);
                     canvas.setFilename(fileName.getText());
                     canvas.setExtension(menuButton.getText().replace(".", ""));
-                    Bridge.controller.tabPane.getSelectionModel().getSelectedItem().setText(canvas.getFilename() + canvas.getExtension());
+                    Bridge.controller.tabPane.getSelectionModel().getSelectedItem().setText(canvas.getFilename() +"."+ canvas.getExtension());
                     Bridge.controller.setTool(Bridge.controller.Tools.getText());
                 }
             } catch (IOException e) {
