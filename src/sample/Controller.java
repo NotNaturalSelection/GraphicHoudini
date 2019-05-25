@@ -359,27 +359,29 @@ public class Controller {
                         break;
                     case "Oval":
                         this.tool = tool;
-                        canvas.addEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.ovalReleased);
+                        canvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, sample.Tools.ovalDragged);
                         canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.ovalPressed);
                         break;
                     case "Line":
                         this.tool = tool;
                         canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.linePressed);
-                        canvas.addEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.lineReleased);
+                        canvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, sample.Tools.lineDragged);
                         break;
                     case "Rectangle":
                         this.tool = tool;
                         canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.rectPressed);
-                        canvas.addEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.rectReleased);
+                        canvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, sample.Tools.rectDragged);
                         break;
                     case "Text":
                         this.tool = tool;
-                        canvas.addEventHandler(MouseEvent.MOUSE_CLICKED, sample.Tools.textClicked);
+                        canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.textPressed);
+                        canvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, sample.Tools.textDragged);
                         break;
                     case "Quadratic curve":
                         this.tool = tool;
                         canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.quadCurvePressed);
                         canvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, sample.Tools.quadCurveDragged);
+                        canvas.addEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.quadCurveReleased);
                         break;
                 }
             } else {
@@ -401,22 +403,24 @@ public class Controller {
                         break;
                     case "Oval":
                         canvas.removeEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.ovalPressed);
-                        canvas.removeEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.ovalReleased);
+                        canvas.removeEventHandler(MouseEvent.MOUSE_DRAGGED, sample.Tools.ovalDragged);
                         break;
                     case "Line":
                         canvas.removeEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.linePressed);
-                        canvas.removeEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.lineReleased);
+                        canvas.removeEventHandler(MouseEvent.MOUSE_DRAGGED, sample.Tools.lineDragged);
                         break;
                     case "Rectangle":
                         canvas.removeEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.rectPressed);
-                        canvas.removeEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.rectReleased);
+                        canvas.removeEventHandler(MouseEvent.MOUSE_DRAGGED, sample.Tools.rectDragged);
                         break;
                     case "Text":
-                        canvas.removeEventHandler(MouseEvent.MOUSE_CLICKED, sample.Tools.textClicked);
+                        canvas.removeEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.textPressed);
+                        canvas.removeEventHandler(MouseEvent.MOUSE_DRAGGED, sample.Tools.textDragged);
                         break;
                     case "Quadratic curve":
                         canvas.removeEventHandler(MouseEvent.MOUSE_PRESSED, sample.Tools.quadCurvePressed);
                         canvas.removeEventHandler(MouseEvent.MOUSE_DRAGGED, sample.Tools.quadCurveDragged);
+                        canvas.removeEventHandler(MouseEvent.MOUSE_RELEASED, sample.Tools.quadCurveReleased);
                         break;
                 }
             }
@@ -477,7 +481,7 @@ public class Controller {
         sliderSizeHBox.setVisible(true);
     }
 
-    private ModifiedCanvas getSelectedCanvas() {
+    ModifiedCanvas getSelectedCanvas() {
         return (ModifiedCanvas) ((BorderPane) tabPane.getSelectionModel().getSelectedItem().getContent()).getCenter();
     }
 
